@@ -9,7 +9,10 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-.env.local
+.env
+/scripts/.env
+/scripts/__pycache__/
+/venv/
 
 # testing
 /coverage

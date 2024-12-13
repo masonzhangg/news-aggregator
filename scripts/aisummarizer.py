@@ -4,6 +4,7 @@ from langchain_community.chat_models import ChatVertexAI
 from langchain.prompts import PromptTemplate
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains.summarize import load_summarize_chain
+from supabase import create_client, Client
 
 import json
 import requests
@@ -107,7 +108,7 @@ def normal_news_list(query, num):
             news_list.append(news_item)
 
     return news_list
-
+ 
 #SPORTS SUMMARY
 def sports_summary(content: str):
     llm = ChatVertexAI(api_key=GEMINI_API_KEY,
@@ -300,3 +301,37 @@ def politics_summary(content: str):
 
     output = summary_chain.run(input_documents=docs)
     return output
+
+# Function to retrieve articles from Supabase based on category
+def retrieve_articles_from_supabase(supabase_client: Client, category: str, limit: int = 5):
+    try:
+        response = supabase_client.table(f"{category}_articles").select("content", "title").limit(limit).execute()
+        if response.status_code == 200:
+            return response.data
+        else:
+            print(f"Error retrieving {category} articles: {response.status_code}")
+            return []
+    except Exception as e:
+        print(f"Error retrieving articles from {category}: {e}")
+        return []
+    
+def summarize_with_retrieval_and_rag(supabase_client: Client, query: str, category: str):
+    articles = retrieve_articles_from_supabase(supabase_client, category)
+    
+    if articles:
+        retrieved_content = " ".join([article['content'] for article in articles])
+        
+        full_context = f"Query: {query}\n\n{retrieved_content}"
+        
+        if category == "sports":
+            return sports_summary(full_context)
+        elif category == "technology":
+            return tech_summary(full_context)
+        elif category == "health":
+            return health_summary(full_context)
+        elif category == "politics":
+            return politics_summary(full_context)
+        else:
+            return "Category not recognized"
+    else:
+        return "No relevant articles found"
