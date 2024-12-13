@@ -5,9 +5,9 @@ from datetime import datetime
 from fastapi import FastAPI, BackgroundTasks
 from pydantic import BaseModel
 import uvicorn
-from aisummarizer import sports_summary, tech_summary, normal_news_list, health_summary, politics_summary, summarize_with_retrieval_and_rag
+from .aisummarizer import sports_summary, tech_summary, normal_news_list, health_summary, politics_summary, summarize_with_retrieval_and_rag
 from supabase import create_client, Client
-from webscrape import scrape_and_insert_news
+from .webscrape import scrape_and_insert_news
 
 app = FastAPI()
 

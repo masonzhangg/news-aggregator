@@ -5,7 +5,7 @@ from urllib.parse import urljoin
 import html
 from supabase import create_client, Client
 from dotenv import load_dotenv
-from aisummarizer import (
+from .aisummarizer import (
     normal_news_list,
     sports_summary,
     tech_summary,
